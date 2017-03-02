@@ -9,8 +9,18 @@ trait MlogClient {
   import org.apache.http.client.methods.HttpGet
   import org.apache.http.impl.client.{ BasicCredentialsProvider, HttpClientBuilder, CloseableHttpClient }
   import java.util.UUID
+  import com.typesafe.config.ConfigFactory
+  import edu.nyu.dlts.bdtools.Protocol._
   
-  def getClient(username: String, password: String): CloseableHttpClient = {
+  val conf = ConfigFactory.load
+  val username = conf.getString("creds.username")
+  val password = conf.getString("creds.password")
+  val baseURL = conf.getString("host.url")
+  val client = getClient
+
+  def shutdown() { client.close }
+
+  def getClient(): CloseableHttpClient = {
 
     val provider = new BasicCredentialsProvider
     val creds = new UsernamePasswordCredentials(username, password)
@@ -18,13 +28,13 @@ trait MlogClient {
     HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build
   }
 
-  def getCollectionID(collection): Map[Int, UUID] = {
-    // call the API here
+  def getCollectionID(collectionCode: String): Map[Int, UUID] = {
+    Map(1 -> UUID.randomUUID)
   }
 
 
-  def getUUID(id: String, client: CloseableHttpClient): Option[UUID] = {
-    //
+  def getUUID(mo: MlogObject): Option[UUID] = {
+    Some(UUID.randomUUID)
   }
 }
 
@@ -50,12 +60,7 @@ trait IO extends MlogClient with TxtWriter {
   import org.apache.commons.io.FilenameUtils
   import org.apache.commons.io.FileUtils
   import scala.util.matching.Regex
-  import org.apache.http.impl.client.CloseableHttpClient
-  import com.typesafe.config.ConfigFactory
   import edu.nyu.dlts.bdtools.Protocol._
-
-  val conf = ConfigFactory.load
-  val client = getClient(conf.getString("creds.username"), conf.getString("creds.password"))
 
 
   def iterateFiles(file: File): Unit = {
