@@ -1,4 +1,4 @@
-scalaVersion := "2.11.4"
+scalaVersion := "2.12.1"
 
 assemblyJarName in assembly := "cleaner.jar"
 
